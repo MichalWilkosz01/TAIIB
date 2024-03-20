@@ -20,6 +20,7 @@ namespace Model
 
         public IEnumerable<BasketPosition>? BasketPositions { get; set; }
 
+        public IEnumerable<OrderPosition>? OrderPositions { get; set; }
 
     }
 }

@@ -24,11 +24,21 @@ namespace Model
         public int Amount { get; set; }
         public decimal Price { get; set; }
 
+        [Column("ProductID")]
+        public int ProductId { get; set; }
+        [ForeignKey(nameof(ProductId))]
+        public required Product Product { get; set; }
+
         public void Configure(EntityTypeBuilder<OrderPosition> builder)
         {
             builder.HasOne(x => x.Order)
                 .WithMany(x => x.OrderPositions)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(x => x.Product)
+                .WithMany(x => x.OrderPositions)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

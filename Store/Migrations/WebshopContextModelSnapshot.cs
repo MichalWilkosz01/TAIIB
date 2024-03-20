@@ -93,9 +93,15 @@ namespace DAL.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int")
+                        .HasColumnName("ProductID");
+
                     b.HasKey("OrderPositionId");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderPositions");
                 });
@@ -196,7 +202,15 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Model.Product", "Product")
+                        .WithMany("OrderPositions")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Model.Order", b =>
@@ -207,6 +221,8 @@ namespace DAL.Migrations
             modelBuilder.Entity("Model.Product", b =>
                 {
                     b.Navigation("BasketPositions");
+
+                    b.Navigation("OrderPositions");
                 });
 
             modelBuilder.Entity("Model.User", b =>
