@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Model;
 
+
 namespace DAL.Context
 {
     public class WebshopContext : DbContext
