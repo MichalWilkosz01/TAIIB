@@ -10,9 +10,9 @@ namespace BLL.Repository
 {
 	public interface IBasketRepository
 	{
-		public void AddProductToBasket(int productId, int userId, int amount);
-		public void DeleteProductFromBasket(int productId, int userId);
-		public void ChangeProductAmountInBasket(int productId, int userId, int amount);
+		public void AddProductToBasket(ProductToBasketDto dto);
+		public void DeleteProductFromBasket(DeleteProductFromBasketDto dto);
+		public void ChangeProductAmountInBasket(ProductToBasketDto dto);
 		public IEnumerable<BasketPositionResponseDto>? GetUserBasket(int userId);
 		
 	}

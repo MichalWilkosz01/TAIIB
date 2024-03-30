@@ -1,38 +1,28 @@
-﻿using BLL.Dto.Product;
+﻿using AutoMapper;
+using BLL.Dto.Product;
 using BLL.Query;
 using BLL.Repository;
 using DAL.Context;
 using Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL_EF
 {
 	public class ProductRepository : IProductRepository
 	{
 		private readonly WebshopContext _context;
+        private readonly IMapper _mapper;
 
-		public ProductRepository(WebshopContext context)
-		{
-			_context = context;
-		}
+        public ProductRepository(WebshopContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-		public int AddProduct(ProductRequestDto dto)
+        public int AddProduct(ProductRequestDto dto)
 		{
 			if (dto == null) throw new ArgumentNullException();
 			if (dto.Price <= 0) throw new ArgumentOutOfRangeException();
-			Product product = new Product()
-			{
-				Name = dto.Name,
-				Price = dto.Price,
-				Image = dto.Image,
-			};
-
-			if (dto.IsActive != null)
-				product.IsActive = true;
+			Product product = _mapper.Map<Product>(dto);
 
 			_context.Add(product);
 			_context.SaveChanges();
@@ -41,39 +31,79 @@ namespace BLL_EF
 
 		public void DeleteProduct(int id)
 		{
-			throw new NotImplementedException();
-		}
+			var product = _context.Products.FirstOrDefault(x => x.ProductId == id) ??
+				throw new InvalidOperationException($"Product with ID {id} not found.");
+
+			if (product.BasketPositions == null || product.BasketPositions.Any())
+			{
+				throw new InvalidOperationException($"Product with ID {id} cannot be deleted because its included in basket");
+			}
+
+			if (product.OrderPositions != null || product.OrderPositions.Any())
+			{
+				product.IsActive = false;
+			}
+			else
+			{
+                _context.Remove(product);
+            }
+			
+			_context.SaveChanges();
+        }
 
 		public ProductResponseDto GetProduct(int id)
 		{
-			var product = _context.Products.FirstOrDefault(x => x.ProductId == id);
-			ProductResponseDto result = new ProductResponseDto()
-			{
-				Image = product.Image,
-				Name = product.Name,
-				Price = product.Price,
-				IsActive = product.IsActive
-			};
-			return result;
+			var product = _mapper.Map<ProductResponseDto>(_context.Products.FirstOrDefault(x => x.ProductId == id)) ??
+                throw new InvalidOperationException($"Product with ID {id} not found.");
+
+   //         ProductResponseDto result = new ProductResponseDto()
+			//{
+			//	Image = product.Image,
+			//	Name = product.Name,
+			//	Price = product.Price,
+			//	IsActive = product.IsActive
+			//};
+			return product;
 		}
 
-		public IEnumerable<ProductResponseDto> GetProducts(ProductQuery productQuery)
+		public IEnumerable<ProductResponseDto>? GetProducts(ProductQuery productQuery)
 		{
-			throw new NotImplementedException();
+			List<Product> products = new List<Product>();
+			if (productQuery.name is not null)
+			{
+				products = _context.Products.Where(x => x.Name.Contains(productQuery.name)).ToList();
+				var productsResult = _mapper.Map<IEnumerable<ProductResponseDto>>(products);
+
+                if (productsResult.Any())
+                {
+                    products = products.Where(x => x.IsActive == productQuery.isActive).ToList();
+                    return productsResult;
+                }
+            }
+
+			return Enumerable.Empty<ProductResponseDto>();
 		}
 
 		public void SetProductActivity(int id)
 		{
-			var product = _context.Products.FirstOrDefault(x => x.ProductId == id);
+			var product = _context.Products.FirstOrDefault(x => x.ProductId == id) ??
+                throw new InvalidOperationException($"Product with ID {id} not found.");
+
 			if (product.IsActive == true)
-				throw new Exception();
-			product.IsActive = true;
+                throw new InvalidOperationException($"Product with ID {id} is already active.");
+
+            product.IsActive = true;
 			_context.SaveChanges();
 		}
 
-		public void UpdateProduct(ProductRequestDto dto, int id)
+		public void UpdateProduct(ProductEditRequestDto dto, int id)
 		{
-			throw new NotImplementedException();
-		}
+            var product = _context.Products.FirstOrDefault(x => x.ProductId == id) ??
+                throw new InvalidOperationException($"Product with ID {id} not found.");
+
+            if (dto.Price <= 0) throw new ArgumentOutOfRangeException();
+            _mapper.Map(dto, product);
+			_context.SaveChanges();
+        }
 	}
 }

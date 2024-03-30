@@ -1,18 +1,13 @@
 ﻿using BLL.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Query
 {
-	public class ProductQuery
+    public class ProductQuery
 	{
-		string? name;
-		bool? isActive;
-		int page;
-		int count;
-		SortDirectionEnum? sortDirection;
-	}
+        public string? name { get; set; }
+        public bool? isActive { get; set; } = true;
+        public int page { get; set; }
+        public int count { get; set; }
+        public SortDirectionEnum? sortDirection { get; set; }
+    }
 }

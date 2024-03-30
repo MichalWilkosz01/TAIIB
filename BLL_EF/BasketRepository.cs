@@ -3,113 +3,100 @@ using BLL.Repository;
 using DAL.Context;
 using Model;
 using BLL.Dto.Product;
+using AutoMapper;
 
 namespace BLL_EF
 {
 	public class BasketRepository : IBasketRepository
 	{
 		private readonly WebshopContext _dbContext;
-        public BasketRepository(WebshopContext context)
+		private readonly IMapper _mapper;
+        public BasketRepository(WebshopContext context, IMapper mapper)
         {
             _dbContext = context;
+            _mapper = mapper;
         }
 
-        public void AddProductToBasket(int productId, int userId, int amount)
+        public void AddProductToBasket(ProductToBasketDto dto)
 		{
-			if(IfUserExists(userId) && IfProductExists(productId) && amount > 0)
+            if (dto.Amount <= 0)
 			{
-				var user = _dbContext.Users.FirstOrDefault(x => x.UserId == userId);
-				var produkt = _dbContext.Products.FirstOrDefault(x=> x.ProductId == productId);
-				BasketPosition basketPosition = new BasketPosition() {
-					Product = produkt,
-					User = user,
-					Amount = amount
-				};
-				_dbContext.BasketPositions.Add(basketPosition);
-				_dbContext.SaveChanges();
+				throw new InvalidOperationException($"Amount cannot be lower or eqaul to 0");
 			}
-			else
+
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserId == dto.UserId) ??
+                throw new InvalidOperationException($"User with ID {dto.UserId} not found.");
+
+			var product = _dbContext.Products.FirstOrDefault(x=> x.ProductId == dto.ProductId) ??
+                throw new InvalidOperationException($"Product with ID {dto.ProductId} not found.");
+
+			if (!product.IsActive)
 			{
-				throw new Exception();
-			}
+				throw new InvalidOperationException("Product is unactive");
+
+            }
+
+			BasketPosition basketPosition = new BasketPosition() {
+				Product = product,
+				User = user,
+				Amount = dto.Amount
+            };
+			_dbContext.BasketPositions.Add(basketPosition);
+			_dbContext.SaveChanges();
 		}
 
-		public void ChangeProductAmountInBasket(int productId, int userId, int amount)
+		public void ChangeProductAmountInBasket(ProductToBasketDto dto)
 		{
-			if (IfUserExists(userId) && IfProductExists(productId) && amount > 0)
-			{
-				var basketPosition = GetBasketPosition(productId, userId);
-				basketPosition.Amount = amount;
-				_dbContext.SaveChanges();
-			}
-			else
-			{
-				throw new Exception();
-			}
+            if (dto.Amount <= 0)
+            {
+                throw new InvalidOperationException($"Amount cannot be lower or eqaul to 0");
+            }
+
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserId == dto.UserId) ??
+                throw new InvalidOperationException($"User with ID {dto.UserId} not found.");
+
+            var product = _dbContext.Products.FirstOrDefault(x => x.ProductId == dto.ProductId) ??
+                throw new InvalidOperationException($"Product with ID {dto.ProductId} not found.");
+
+            var basketPosition = user.BasketPositions?.FirstOrDefault(x => x.ProductId == dto.ProductId) ?? 
+				throw new InvalidOperationException($"Basket position with product ID {dto.ProductId} not found.");
+
+            basketPosition.Amount = dto.Amount;
+			_dbContext.SaveChanges();
 		}
 
-		public void DeleteProductFromBasket(int productId, int userId)
+		public void DeleteProductFromBasket(DeleteProductFromBasketDto dto)
 		{
-			if (IfUserExists(userId) && IfProductExists(productId))
-			{
-				var basketPosition = GetBasketPosition(productId, userId);
-				_dbContext.Remove(basketPosition);
-				_dbContext.SaveChanges();
-			}
-			else
-			{
-				throw new Exception();
-			}
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserId == dto.UserId) ??
+				throw new InvalidOperationException($"User with ID {dto.UserId} not found.");
+
+            var product = _dbContext.Products.FirstOrDefault(x => x.ProductId == dto.ProductId) ??
+                throw new InvalidOperationException($"Product with ID {dto.ProductId} not found.");
+
+            var basketPosition = user.BasketPositions?.FirstOrDefault(x => x.ProductId == dto.ProductId) ??
+				throw new InvalidOperationException($"Basket position with product ID {dto.ProductId} not found.");
+
+            _dbContext.Remove(basketPosition);
+			_dbContext.SaveChanges();
 		}
 
 		public IEnumerable<BasketPositionResponseDto>? GetUserBasket(int userId)
 		{
-			var user = _dbContext.Users.FirstOrDefault(x => x.UserId == userId);
-			if (user == null)
-				throw new Exception();
+            var user = _dbContext.Users.FirstOrDefault(x => x.UserId == userId) ??
+                throw new InvalidOperationException($"User with ID {userId} not found.");
+
 			var userBasketList = user.BasketPositions?.ToList();
+
+			if (userBasketList is null || !userBasketList.Any())
+				return Enumerable.Empty<BasketPositionResponseDto>();
+
+
 			List<BasketPositionResponseDto> responseDtos = new List<BasketPositionResponseDto>();
-			foreach (var basketPosition in userBasketList)
-			{
-				responseDtos.Add(
-					new BasketPositionResponseDto()
-					{
-						Product = new ProductResponseDto()
-						{
-							ProductId = basketPosition.ProductId,
-							Name = basketPosition.Product.Name,
-							Price = basketPosition.Product.Price,
-							Image = basketPosition.Product.Image,
-							IsActive = basketPosition.Product.IsActive
-						}
-					});
-			}
+			_mapper.Map<List<BasketPositionResponseDto>>(userBasketList);
 
-			return responseDtos;
+
+            return responseDtos;
 		}
 
-		private bool IfUserExists(int userId)
-		{
-			return _dbContext.Users.Any(x => x.UserId == userId);
-		}
-
-		private bool IfProductExists(int productId)
-		{
-			return _dbContext.Products.Any(x => x.ProductId == productId);
-		}
-
-		private BasketPosition GetBasketPosition(int productId, int userId)
-		{
-			if(IfUserExists(userId) && IfProductExists(productId)) 
-			{
-				var user = _dbContext.Users.FirstOrDefault(x => x.UserId == userId);
-				var basketPosition = user.BasketPositions.FirstOrDefault(x => x.ProductId == productId);
-				return basketPosition;
-			}
-			else
-			{
-				throw new Exception();
-			}
-		}
 	}
 }
