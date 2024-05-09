@@ -1,0 +1,12 @@
+<p>Products work!</p>
+<table>
+    <tr *ngFor="let item of data">
+        <td>{{item.name}}</td>
+        <td>
+            <ul>
+                <li>{{item.price}}</li>
+            </ul>
+        </td>
+        <td>{{item.isActive}}</td>
+    </tr>
+</table>

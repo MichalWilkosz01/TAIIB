@@ -80,6 +80,15 @@ namespace BLL_EF
                     return productsResult;
                 }
             }
+			else
+			{
+				products = _context.Products.ToList();
+				var productsResult = _mapper.Map<IEnumerable<ProductResponseDto>>(products);
+				if (productsResult.Any())
+				{
+					return productsResult;
+				}
+			}
 
 			return Enumerable.Empty<ProductResponseDto>();
 		}
