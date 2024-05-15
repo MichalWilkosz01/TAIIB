@@ -4,9 +4,11 @@ import { ProductsComponent } from './products/products.component';
 import { OrdersComponent } from './orders/orders.component';
 import { AllComponent } from './orders/all/all.component';
 import { BasketComponent } from './basket/basket.component';
+import { DetailsComponent } from './products/details/details.component';
 
 const routes: Routes = [
   { path: 'products', component: ProductsComponent },
+  { path: 'product/:id', component: DetailsComponent },
   { path: 'orders', component: OrdersComponent },
   { path: 'orders/all', component: AllComponent },
   { path: 'basket', component: BasketComponent },
