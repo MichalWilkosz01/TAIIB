@@ -15,6 +15,9 @@ import { ProductRowComponent } from './product-row/product-row.component';
 import { DetailsComponent } from './products/details/details.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelect } from '@angular/material/select';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import {MatSelectModule} from '@angular/material/select';
 
 
 
@@ -37,7 +40,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatCardModule,
     MatButtonModule,
     MatPaginatorModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatSelect,
+    MatToolbarModule,
+    MatSelectModule
   ],
   providers: [
     provideAnimationsAsync('noop')

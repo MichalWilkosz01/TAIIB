@@ -1,47 +1,22 @@
+<mat-form-field class="sort">
+  <mat-label>Sortowanie</mat-label>
+  <mat-select>
+    <mat-option value="nazwa">Alfabetycznie</mat-option>
+    <mat-option value="cena">Po cenie</mat-option>
+  </mat-select>
+</mat-form-field>
+
+
 <div class="card-container">
-    <div class="selectable" *ngFor="let s of data" [app-product-row]="s" (click)="redirectToProductDetails(s.productId)"></div>    
+    <div class="selectable" *ngFor="let p of data" [app-product-row]="p" (click)="redirectToProductDetails(p.productId)"></div>    
 </div>
   
-<div class="demo-options">
-  
-    <mat-form-field>
-      <mat-label>Page Size</mat-label>
-      <input matInput placeholder="Page Size" type="number" [(ngModel)]="count">
-    </mat-form-field>
-  
-    <mat-form-field>
-      <mat-label>Page Index</mat-label>
-      <input matInput placeholder="Page Index" type="number" [(ngModel)]="page">
-    </mat-form-field>
-  
-    <mat-form-field>
-      <mat-label>Page Size Options</mat-label>
-      <input matInput [ngModel]="pageSizeOptions" (ngModelChange)="setPageSizeOptions($event)"
-             [ngModelOptions]="{updateOn: 'blur'}" placeholder="Ex. 10,25,50">
-    </mat-form-field>
-  
-    <div class="demo-toggles">
-      <mat-slide-toggle [(ngModel)]="hidePageSize">Hide page size</mat-slide-toggle>
-      <mat-slide-toggle [(ngModel)]="showPageSizeOptions">Show multiple page size options</mat-slide-toggle>
-      <mat-slide-toggle [(ngModel)]="showFirstLastButtons">Show first/last buttons</mat-slide-toggle>
-      <mat-slide-toggle [(ngModel)]="disabled">Disabled</mat-slide-toggle>
-    </div>
-  </div>
-  
-  <mat-paginator #paginator
-                 class="demo-paginator"
-                 (page)="pageEvent = $event"
-                 [pageSize]="count"
-                 [disabled]="disabled"
-                 [showFirstLastButtons]="showFirstLastButtons"
-                 [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
-                 [hidePageSize]="hidePageSize"
-                 [pageIndex]="page"
-                 aria-label="Select page">
-  </mat-paginator>
-  
-  <div class="demo-data">
-    <div> Output event: {{(pageEvent | json) || 'No events dispatched yet'}} </div>
-    <div> getNumberOfPages: {{paginator.getNumberOfPages()}} </div>
-  </div>
+
+
+<mat-paginator 
+  [pageSizeOptions]="pageOptions" 
+  [length]="totalItems"
+  [pageSize]="pageSize"
+  (page)="handlePageEvent($event)">
+</mat-paginator>
   

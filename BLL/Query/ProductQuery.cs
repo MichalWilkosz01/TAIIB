@@ -4,10 +4,10 @@ namespace BLL.Query
 {
     public class ProductQuery
 	{
-        public string? name { get; set; }
-        public bool? isActive { get; set; } = true;
-        public int page { get; set; }
-        public int count { get; set; }
-        public SortDirectionEnum? sortDirection { get; set; }
+        public string? Name { get; set; }
+        public bool? IsActive { get; set; } = true;
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+        public SortDirectionEnum? SortDircetion { get; set; }
     }
 }

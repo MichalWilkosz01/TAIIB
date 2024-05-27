@@ -5,3 +5,4 @@ export interface ProductResponseDto {
     image: string;
     isActive: boolean;
 }
+

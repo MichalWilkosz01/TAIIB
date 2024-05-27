@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BLL;
 using BLL.Dto.Product;
 using BLL.Query;
 using BLL.Repository;
@@ -66,32 +67,36 @@ namespace BLL_EF
 			return product;
 		}
 
-		public IEnumerable<ProductResponseDto>? GetProducts(ProductQuery productQuery)
+		public PageResult<ProductResponseDto>? GetProducts(ProductQuery productQuery)
 		{
-			List<Product> products = new List<Product>();
-			if (productQuery.name is not null)
-			{
-				products = _context.Products.Where(x => x.Name.Contains(productQuery.name)).ToList();
-				var productsResult = _mapper.Map<IEnumerable<ProductResponseDto>>(products);
+            IEnumerable<Product> products;
+            IEnumerable<ProductResponseDto> productsResult;
 
-                if (productsResult.Any())
-                {
-                    products = products.Where(x => x.IsActive == productQuery.isActive).ToList();
-                    return productsResult;
-                }
+            if (!string.IsNullOrEmpty(productQuery.Name))
+            {
+                products = _context.Products.Where(x => x.Name.Contains(productQuery.Name)).ToList();
             }
-			else
-			{
-				products = _context.Products.ToList();
-				var productsResult = _mapper.Map<IEnumerable<ProductResponseDto>>(products);
-				if (productsResult.Any())
-				{
-					return productsResult;
-				}
-			}
+            else
+            {
+                products = _context.Products.ToList();
+            }
 
-			return Enumerable.Empty<ProductResponseDto>();
-		}
+            productsResult = _mapper.Map<IEnumerable<ProductResponseDto>>(products);
+
+            if (productsResult.Any())
+            {
+                if (productQuery.Name != null)
+                {
+                    products = products.Where(x => x.IsActive == productQuery.IsActive).ToList();
+                    productsResult = _mapper.Map<IEnumerable<ProductResponseDto>>(products);
+
+                }
+
+				return new PageResult<ProductResponseDto>(productsResult.ToList(), productQuery.PageIndex, productQuery.PageSize);
+            }
+
+			return null;
+        }
 
 		public void SetProductActivity(int id)
 		{

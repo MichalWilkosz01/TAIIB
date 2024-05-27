@@ -6,7 +6,7 @@ namespace BLL.Repository
 {
 	public interface IProductRepository
 	{
-		public IEnumerable<ProductResponseDto>? GetProducts(ProductQuery productQuery);
+		public PageResult<ProductResponseDto>? GetProducts(ProductQuery productQuery);
 		public ProductResponseDto GetProduct(int id);
 		public int AddProduct(ProductRequestDto dto);
 		public void UpdateProduct(ProductEditRequestDto dto, int id);

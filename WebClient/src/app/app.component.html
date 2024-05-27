@@ -1,16 +1,8 @@
-<ul>
-  <li>
-    <a routerLink="products">Products</a>
-  </li>
-  <li>
-    <a routerLink="orders">Orders</a>
-  </li>
-  <li>
-    <a routerLink="orders/all">Orders/all</a>
-  </li>
-  <li>
-    <a routerLink="basket">Basket</a>
-  </li>
-</ul>
+<mat-toolbar color="primary">
+  <button mat-button routerLink="/products">Produkty</button>
+  <button mat-button routerLink="/orders">Zamowienia</button>
+  <button mat-button routerLink="/orders/all">Wszystkie zamowienia</button>
+  <button mat-button routerLink="/basket">Koszyk</button>
+</mat-toolbar>
 
 <router-outlet></router-outlet>
