@@ -18,7 +18,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelect } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {MatSelectModule} from '@angular/material/select';
-
+import {MatInputModule} from '@angular/material/input';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 
 
@@ -43,7 +44,10 @@ import {MatSelectModule} from '@angular/material/select';
     MatFormFieldModule,
     MatSelect,
     MatToolbarModule,
-    MatSelectModule
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatGridListModule
   ],
   providers: [
     provideAnimationsAsync('noop')

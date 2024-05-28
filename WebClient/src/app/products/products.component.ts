@@ -6,14 +6,16 @@ import { Router } from '@angular/router';
 import { PageEvent } from '@angular/material/paginator';
 
 
-
-
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
 })
 export class ProductsComponent {
+clickAscending() {
+  this.sortDirection = SortDirectionEnum.Ascending;
+  this.loadProducts(); 
+}
 
 redirectToProductDetails(productId: number): void {
   this.router.navigate(['/product', productId]);
@@ -36,8 +38,6 @@ redirectToProductDetails(productId: number): void {
     this.loadProducts();
   }
 
-  
-
   handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex + 1;
@@ -46,7 +46,8 @@ redirectToProductDetails(productId: number): void {
   }
   
   loadProducts() {
-    this.productService.get({ name: this.name, isActive: this.isActive, pageIndex: this.currentPage, pageSize: this.pageSize, sortDircetion: this.sortDirection })
+    this.productService.get({ name: this.name, isActive: this.isActive, pageIndex: this.currentPage, 
+                              pageSize: this.pageSize, sortDircetion: this.sortDirection })
     .subscribe({
       next: (res) => {
         console.log(res);
