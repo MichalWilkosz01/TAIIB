@@ -12,6 +12,37 @@ import { PageEvent } from '@angular/material/paginator';
   styleUrl: './products.component.css'
 })
 export class ProductsComponent {
+clickInactive() {
+  this.isActive = false;
+  this.selectedSortValue = "inactive"
+  this.loadProducts();
+}
+clickActive() {
+  this.isActive = true;
+  this.selectedSortValue = "active"
+  this.loadProducts();
+}
+clickBoth() {
+  this.isActive = null;
+  this.selectedSortValue = "both";
+  this.loadProducts();
+}
+clickDescending() {
+  this.sortDirection = SortDirectionEnum.Descending;
+  this.loadProducts(); 
+}
+  selectedDirectionValue: string | null = null;
+  selectedSortValue: string = "both";
+
+
+searching() {
+  this.selectedDirectionValue = null;
+  this.sortDirection = null;
+  this.isActive = null;
+  this.loadProducts();
+}
+  
+
 clickAscending() {
   this.sortDirection = SortDirectionEnum.Ascending;
   this.loadProducts(); 
@@ -21,7 +52,7 @@ redirectToProductDetails(productId: number): void {
   this.router.navigate(['/product', productId]);
 }
   
-  public name: string | null = null;
+  public name: string = '';
   public isActive: boolean | null = null;
   public currentPage: number = 1;
   public count: number = 10;
@@ -41,15 +72,20 @@ redirectToProductDetails(productId: number): void {
   handlePageEvent(event: PageEvent): void {
     this.pageSize = event.pageSize;
     this.currentPage = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
     this.loadProducts();
   }
   
   loadProducts() {
     this.productService.get({ name: this.name, isActive: this.isActive, pageIndex: this.currentPage, 
-                              pageSize: this.pageSize, sortDircetion: this.sortDirection })
+                              pageSize: this.pageSize, sortDirection: this.sortDirection })
     .subscribe({
       next: (res) => {
+        if (res == null) {
+          this.data = [];
+          this.totalItems = 0;
+          this.totalPages = 0;
+          return;
+        }
         console.log(res);
         this.data = res.items;
         this.totalItems = res.count;

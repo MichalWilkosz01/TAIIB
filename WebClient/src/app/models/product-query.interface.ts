@@ -5,5 +5,5 @@ export interface ProductQuery {
     isActive: boolean | null;
     pageIndex: number;
     pageSize: number;
-    sortDircetion: SortDirectionEnum | null;
+    sortDirection: SortDirectionEnum | null;
 }

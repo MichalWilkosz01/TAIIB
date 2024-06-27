@@ -12,7 +12,16 @@ export class ProductService {
     constructor(private httpClient: HttpClient) {}
 
     public get(pagination: ProductQuery): Observable<PageResult<ProductResponseDto>> {
-        const params = { PageIndex: pagination.pageIndex ?? 1, PageSize: pagination.pageSize ?? 5 };
+        const params: any = { PageIndex: pagination.pageIndex ?? 1, PageSize: pagination.pageSize ?? 5 };
+        
+        if (pagination.name) {
+            params.name = pagination.name;
+        }
+
+        if (pagination.sortDirection != null) {
+            params.sortDirection = pagination.sortDirection;
+        }
+
         return this.httpClient.get<PageResult<ProductResponseDto>>('http://localhost:5129/api/Products', { params: params });
     }
 }

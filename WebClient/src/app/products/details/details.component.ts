@@ -5,6 +5,11 @@ import { Component } from '@angular/core';
   templateUrl: './details.component.html',
   styleUrl: './details.component.css'
 })
-export class DetailsComponent {
 
+
+export class DetailsComponent {
+  //productId: number | null;
+  constructor() {
+    //this.productId = this.ac
+  }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BLL.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,13 +14,22 @@ namespace BLL
         public int PageSize { get; set; }
         public int TotalPages { get; set; }
         public List<T> Items { get; set; }
-        public PageResult(List<T> items, int pageNumber, int pageSize)
+        public PageResult(List<T> items, int pageNumber, int pageSize, SortDirectionEnum? sortDirection, Func<T, object>? sortKeySelector)
         {
-            Count = items.Count;
-            Items = items.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            var itemsToSort = new List<T>(items);
+            if (sortDirection.HasValue && sortKeySelector is not null)
+            {
+                itemsToSort = sortDirection.Value == SortDirectionEnum.Ascending
+                    ? itemsToSort.OrderBy(sortKeySelector).ToList()
+                    : itemsToSort.OrderByDescending(sortKeySelector).ToList();
+
+            }
+            Count = itemsToSort.Count;
+            Items = itemsToSort.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
             PageIndex = pageNumber;
             PageSize = pageSize;
-            TotalPages = (items.Count + PageSize - 1) / pageSize;
+            TotalPages = (itemsToSort.Count + PageSize - 1) / pageSize;
+            
         }
     }
 }

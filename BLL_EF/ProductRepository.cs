@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BLL;
 using BLL.Dto.Product;
+using BLL.Enums;
 using BLL.Query;
 using BLL.Repository;
 using DAL.Context;
@@ -91,11 +92,12 @@ namespace BLL_EF
                     productsResult = _mapper.Map<IEnumerable<ProductResponseDto>>(products);
 
                 }
-
-				return new PageResult<ProductResponseDto>(productsResult.ToList(), productQuery.PageIndex, productQuery.PageSize);
+                Func<ProductResponseDto, object>? sortKeySelector = item => item.Price;
+				var result = new PageResult<ProductResponseDto>(productsResult.ToList(), productQuery.PageIndex, productQuery.PageSize, productQuery.SortDirection, sortKeySelector);
+				return result;
             }
 
-			return null;
+            return new PageResult<ProductResponseDto>(productsResult.ToList(), productQuery.PageIndex, productQuery.PageSize, null, null);
         }
 
 		public void SetProductActivity(int id)

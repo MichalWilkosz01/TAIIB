@@ -8,6 +8,6 @@ namespace BLL.Query
         public bool? IsActive { get; set; } = true;
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
-        public SortDirectionEnum? SortDircetion { get; set; }
+        public SortDirectionEnum? SortDirection { get; set; }
     }
 }
